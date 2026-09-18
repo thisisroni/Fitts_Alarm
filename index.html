@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090c16">
+  <title>Fitts Alarm｜防賴床點擊實驗</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b13;
+      --panel: #101522;
+      --ink: #f7f8fb;
+      --muted: #9ba6b9;
+      --alarm: #ff4057;
+      --alarm-soft: rgba(255, 64, 87, 0.2);
+      --cyan: #6cf3d5;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-width: 980px;
+      overflow: auto;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 64, 87, 0.13), transparent 32rem),
+        radial-gradient(circle at 85% 100%, rgba(108, 243, 213, 0.09), transparent 34rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans TC", sans-serif;
+    }
+
+    .app {
+      width: 948px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--alarm);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .session-field {
+      display: grid;
+      gap: 6px;
+      width: 236px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      transition: opacity 160ms ease;
+    }
+
+    .session-field input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #283044;
+      border-radius: 10px;
+      outline: none;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #111725;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .session-field input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(108, 243, 213, 0.12);
+    }
+
+    .session-field.is-locked { opacity: 0.42; }
+
+    .user-guide {
+      margin: 0 0 18px;
+      overflow: hidden;
+      border: 1px solid #283044;
+      border-radius: 16px;
+      background: rgba(16, 21, 34, 0.88);
+      transition: opacity 160ms ease;
+    }
+
+    .user-guide.is-hidden { display: none; }
+
+    .user-guide summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 18px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      list-style: none;
+      user-select: none;
+    }
+
+    .user-guide summary::-webkit-details-marker { display: none; }
+
+    .user-guide summary::before {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      place-items: center;
+      color: #07110f;
+      background: var(--cyan);
+      content: "?";
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .user-guide summary::after {
+      margin-left: auto;
+      color: var(--muted);
+      content: "展開";
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .user-guide[open] summary::after { content: "收合"; }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      border-top: 1px solid #283044;
+      background: #283044;
+    }
+
+    .guide-step {
+      min-height: 108px;
+      padding: 15px 16px 16px;
+      color: var(--muted);
+      background: #101522;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .guide-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .guide-number {
+      margin-right: 5px;
+      color: var(--alarm);
+      font-weight: 900;
+    }
+
+    .canvas-shell {
+      position: relative;
+      width: 900px;
+      height: 700px;
+      overflow: hidden;
+      border: 1px solid #262d3d;
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+    }
+
+    canvas {
+      display: block;
+      width: 900px;
+      height: 700px;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .canvas-shell.is-alarming::after {
+      position: absolute;
+      inset: 0;
+      border: 3px solid rgba(255, 64, 87, 0.82);
+      border-radius: 22px;
+      content: "";
+      pointer-events: none;
+      animation: alarm-frame 1.15s ease-in-out infinite;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .footnote {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 4px 0;
+      color: #727d90;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    @keyframes alarm-frame {
+      0%, 100% { opacity: 0.32; box-shadow: inset 0 0 18px rgba(255, 64, 87, 0.08); }
+      50% { opacity: 1; box-shadow: inset 0 0 38px rgba(255, 64, 87, 0.24); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .canvas-shell.is-alarming::after { animation: none; opacity: 0.8; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div>
+        <p class="eyebrow">Fitts’ Law Experiment</p>
+        <h1>防賴床鬧鐘</h1>
+      </div>
+      <label class="session-field" id="sessionField">
+        SESSION 標籤（選填）
+        <input id="sessionInput" type="text" maxlength="40" placeholder="例如：sleepy / awake" autocomplete="off">
+      </label>
+    </div>
+
+    <details class="user-guide" id="userGuide" open>
+      <summary>開始前，請先閱讀操作說明</summary>
+      <div class="guide-grid">
+        <div class="guide-step">
+          <strong><span class="guide-number">01</span>填寫標籤</strong>
+          選填 sleepy、awake 或受試者編號，方便之後辨認 CSV 的實驗條件。
+        </div>
+        <div class="guide-step">
+          <strong><span class="guide-number">02</span>按下開始</strong>
+          點擊紅色開始按鈕後立即計時。請使用滑鼠，並維持相同坐姿與裝置。
+        </div>
+        <div class="guide-step">
+          <strong><span class="guide-number">03</span>依序命中</strong>
+          連續點擊 36 個圓形目標；點到圓外會記為 miss，且必須重點同一目標。
+        </div>
+        <div class="guide-step">
+          <strong><span class="guide-number">04</span>下載資料</strong>
+          完成後先下載 CSV，再選擇重測。未下載就重測時，系統會先提醒你。
+        </div>
+      </div>
+    </details>
+
+    <div class="canvas-shell is-alarming" id="canvasShell">
+      <canvas id="experimentCanvas" width="900" height="700"
+        role="application"
+        aria-label="防賴床鬧鐘待機中。點擊畫面中央按鈕開始解除鬧鐘。"></canvas>
+    </div>
+    <p id="liveStatus" class="sr-only" aria-live="polite">鬧鐘正在響，等待開始。</p>
+
+    <div class="footnote" aria-hidden="true">
+      <span>36 TARGETS · A 150 / 300 / 450 · W 40 / 70 / 100</span>
+      <span>900 × 700 EXPERIMENT AREA</span>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const LOGICAL_WIDTH = 900;
+      const LOGICAL_HEIGHT = 700;
+      const DISTANCES = [150, 300, 450];
+      const WIDTHS = [40, 70, 100];
+      const REPETITIONS = 4;
+      const TOTAL_TRIALS = DISTANCES.length * WIDTHS.length * REPETITIONS;
+      const TAU = Math.PI * 2;
+
+      const canvas = document.getElementById('experimentCanvas');
+      const shell = document.getElementById('canvasShell');
+      const userGuide = document.getElementById('userGuide');
+      const sessionField = document.getElementById('sessionField');
+      const sessionInput = document.getElementById('sessionInput');
+      const liveStatus = document.getElementById('liveStatus');
+      const ctx = canvas.getContext('2d');
+
+      const startButton = { x: 300, y: 493, width: 300, height: 66, radius: 18 };
+      const downloadButton = { x: 205, y: 474, width: 280, height: 62, radius: 17 };
+      const restartButton = { x: 505, y: 474, width: 190, height: 62, radius: 17 };
+
+      let state = 'idle';
+      let trials = [];
+      let results = [];
+      let currentIndex = 0;
+      let currentTarget = null;
+      let currentMisses = 0;
+      let trialStartedAt = 0;
+      let sessionLabel = '';
+      let hasDownloaded = false;
+      let missFlashUntil = 0;
+      let cursorPoint = { x: -1, y: -1 };
+      let animationFrame = 0;
+
+      function configureCanvas() {
+        const ratio = Math.max(1, window.devicePixelRatio || 1);
+        canvas.width = Math.round(LOGICAL_WIDTH * ratio);
+        canvas.height = Math.round(LOGICAL_HEIGHT * ratio);
+        canvas.style.width = `${LOGICAL_WIDTH}px`;
+        canvas.style.height = `${LOGICAL_HEIGHT}px`;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+
+      function shuffle(items) {
+        const copy = [...items];
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      function buildTrials() {
+        const conditions = [];
+        for (let repetition = 0; repetition < REPETITIONS; repetition += 1) {
+          for (const A of DISTANCES) {
+            for (const W of WIDTHS) conditions.push({ A, W });
+          }
+        }
+        return shuffle(conditions);
+      }
+
+      function pointAt(origin, distance, angle) {
+        return {
+          x: origin.x + Math.cos(angle) * distance,
+          y: origin.y + Math.sin(angle) * distance
+        };
+      }
+
+      function targetFits(point, diameter) {
+        const radius = diameter / 2;
+        return point.x >= radius && point.x <= LOGICAL_WIDTH - radius &&
+          point.y >= radius && point.y <= LOGICAL_HEIGHT - radius;
+      }
+
+      function chooseTarget(origin, trial) {
+        for (let attempt = 0; attempt < 360; attempt += 1) {
+          const angle = Math.random() * TAU;
+          const candidate = pointAt(origin, trial.A, angle);
+          if (targetFits(candidate, trial.W)) return { ...candidate, ...trial };
+        }
+
+        const phase = Math.random() * TAU;
+        const scanSteps = 3600;
+        for (let step = 0; step < scanSteps; step += 1) {
+          const angle = phase + (step / scanSteps) * TAU;
+          const candidate = pointAt(origin, trial.A, angle);
+          if (targetFits(candidate, trial.W)) return { ...candidate, ...trial };
+        }
+
+        throw new Error(`無法放置 A=${trial.A}, W=${trial.W} 的目標。`);
+      }
+
+      function prepareTarget(origin) {
+        currentTarget = chooseTarget(origin, trials[currentIndex]);
+        currentMisses = 0;
+        updateAccessibleStatus();
+      }
+
+      function roundedRectPath(x, y, width, height, radius) {
+        const r = Math.min(radius, width / 2, height / 2);
+        ctx.beginPath();
+        ctx.roundRect(x, y, width, height, r);
+      }
+
+      function drawBackground() {
+        const gradient = ctx.createLinearGradient(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+        gradient.addColorStop(0, '#121827');
+        gradient.addColorStop(0.58, '#0d121f');
+        gradient.addColorStop(1, '#101725');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
+        ctx.save();
+        ctx.globalAlpha = 0.23;
+        ctx.strokeStyle = '#273146';
+        ctx.lineWidth = 1;
+        for (let x = 50; x < LOGICAL_WIDTH; x += 50) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, LOGICAL_HEIGHT);
+          ctx.stroke();
+        }
+        for (let y = 50; y < LOGICAL_HEIGHT; y += 50) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(LOGICAL_WIDTH, y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawAlarmIcon(time) {
+        const pulse = 1 + Math.sin(time / 230) * 0.035;
+        ctx.save();
+        ctx.translate(450, 220);
+        ctx.scale(pulse, pulse);
+
+        ctx.shadowColor = 'rgba(255, 64, 87, 0.72)';
+        ctx.shadowBlur = 34;
+        ctx.fillStyle = '#ff4057';
+        ctx.beginPath();
+        ctx.arc(0, 0, 72, 0, TAU);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 7;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(0, 0, 42, 0, TAU);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -25);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(24, 12);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-48, -55);
+        ctx.lineTo(-68, -72);
+        ctx.moveTo(48, -55);
+        ctx.lineTo(68, -72);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawButton(button, label, active, accent = '#ff4057') {
+        ctx.save();
+        roundedRectPath(button.x, button.y, button.width, button.height, button.radius);
+        ctx.fillStyle = active ? accent : '#222a3a';
+        if (active) {
+          ctx.shadowColor = accent;
+          ctx.shadowBlur = 22;
+        }
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = active ? '#07110f' : '#f7f8fb';
+        if (accent === '#ff4057' && active) ctx.fillStyle = '#ffffff';
+        ctx.font = '800 17px Inter, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, button.x + button.width / 2, button.y + button.height / 2 + 1);
+        ctx.restore();
+      }
+
+      function drawIdle(time) {
+        drawBackground();
+        drawAlarmIcon(time);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ff6578';
+        ctx.font = '800 13px Inter, system-ui, sans-serif';
+        ctx.fillText('ALARM RINGING', 450, 333);
+        ctx.fillStyle = '#f7f8fb';
+        ctx.font = '800 34px Inter, "Noto Sans TC", sans-serif';
+        ctx.fillText('別讓肌肉記憶替你關掉鬧鐘', 450, 382);
+        ctx.fillStyle = '#9ba6b9';
+        ctx.font = '500 16px Inter, "Noto Sans TC", sans-serif';
+        ctx.fillText('依序命中 36 個隨機目標，完成後才能解除', 450, 420);
+
+        drawButton(startButton, '起床／開始解除鬧鐘', isInsideRect(cursorPoint, startButton));
+
+        ctx.fillStyle = '#6d788b';
+        ctx.font = '600 12px Inter, "Noto Sans TC", sans-serif';
+        ctx.fillText('點擊開始後將立即計時', 450, 590);
+      }
+
+      function drawProgress() {
+        const trial = trials[currentIndex];
+        ctx.fillStyle = 'rgba(8, 11, 19, 0.72)';
+        roundedRectPath(22, 20, 856, 62, 14);
+        ctx.fill();
+
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#f7f8fb';
+        ctx.font = '800 17px Inter, system-ui, sans-serif';
+        ctx.fillText(`TARGET ${currentIndex + 1} / ${TOTAL_TRIALS}`, 44, 51);
+
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#9ba6b9';
+        ctx.font = '700 13px Inter, system-ui, sans-serif';
+        ctx.fillText(`A ${trial.A} px   ·   W ${trial.W} px`, 856, 51);
+
+        const progressWidth = 856 * (currentIndex / TOTAL_TRIALS);
+        ctx.fillStyle = 'rgba(108, 243, 213, 0.16)';
+        ctx.fillRect(22, 77, 856, 3);
+        ctx.fillStyle = '#6cf3d5';
+        ctx.fillRect(22, 77, progressWidth, 3);
+      }
+
+      function drawRunning(time) {
+        drawBackground();
+        drawProgress();
+        if (!currentTarget) return;
+
+        const radius = currentTarget.W / 2;
+        const pulse = 1 + Math.sin(time / 170) * 0.035;
+        ctx.save();
+        ctx.translate(currentTarget.x, currentTarget.y);
+        ctx.scale(pulse, pulse);
+        ctx.shadowColor = 'rgba(108, 243, 213, 0.72)';
+        ctx.shadowBlur = 24;
+        ctx.fillStyle = '#6cf3d5';
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, TAU);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#08120f';
+        ctx.font = `800 ${Math.max(12, Math.min(20, radius * 0.48))}px Inter, system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(currentIndex + 1), currentTarget.x, currentTarget.y + 1);
+
+        if (time < missFlashUntil) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, (missFlashUntil - time) / 180);
+          ctx.strokeStyle = '#ff4057';
+          ctx.lineWidth = 6;
+          ctx.strokeRect(3, 3, LOGICAL_WIDTH - 6, LOGICAL_HEIGHT - 6);
+          ctx.restore();
+        }
+      }
+
+      function drawCompleted(time) {
+        drawBackground();
+        const average = results.reduce((sum, row) => sum + row.MT, 0) / results.length;
+        const slowPulse = 1 + Math.sin(time / 400) * 0.02;
+
+        ctx.save();
+        ctx.translate(450, 203);
+        ctx.scale(slowPulse, slowPulse);
+        ctx.shadowColor = 'rgba(108, 243, 213, 0.52)';
+        ctx.shadowBlur = 30;
+        ctx.fillStyle = '#6cf3d5';
+        ctx.beginPath();
+        ctx.arc(0, 0, 68, 0, TAU);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#07110f';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-29, 0);
+        ctx.lineTo(-7, 23);
+        ctx.lineTo(34, -24);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#6cf3d5';
+        ctx.font = '800 13px Inter, system-ui, sans-serif';
+        ctx.fillText('ALARM DISMISSED', 450, 316);
+        ctx.fillStyle = '#f7f8fb';
+        ctx.font = '800 40px Inter, "Noto Sans TC", sans-serif';
+        ctx.fillText('鬧鐘已解除', 450, 366);
+        ctx.fillStyle = '#9ba6b9';
+        ctx.font = '600 16px Inter, "Noto Sans TC", sans-serif';
+        ctx.fillText(`完成 ${results.length} 個目標 · 平均 MT ${average.toFixed(1)} ms`, 450, 410);
+
+        drawButton(downloadButton, '下載 CSV 實驗資料', isInsideRect(cursorPoint, downloadButton), '#6cf3d5');
+        drawButton(restartButton, '再測一次', isInsideRect(cursorPoint, restartButton), '#ff6578');
+
+        ctx.fillStyle = '#687487';
+        ctx.font = '600 12px Inter, "Noto Sans TC", sans-serif';
+        ctx.fillText('資料只會保存在這個瀏覽器分頁，請記得下載', 450, 575);
+      }
+
+      function render(time = performance.now()) {
+        ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+        if (state === 'idle') drawIdle(time);
+        if (state === 'running') drawRunning(time);
+        if (state === 'completed') drawCompleted(time);
+        animationFrame = requestAnimationFrame(render);
+      }
+
+      function canvasPoint(event) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (event.clientX - rect.left) * (LOGICAL_WIDTH / rect.width),
+          y: (event.clientY - rect.top) * (LOGICAL_HEIGHT / rect.height)
+        };
+      }
+
+      function isInsideRect(point, rect) {
+        return point.x >= rect.x && point.x <= rect.x + rect.width &&
+          point.y >= rect.y && point.y <= rect.y + rect.height;
+      }
+
+      function isInsideTarget(point, target) {
+        const dx = point.x - target.x;
+        const dy = point.y - target.y;
+        const radius = target.W / 2;
+        return dx * dx + dy * dy <= radius * radius;
+      }
+
+      function beginExperiment(origin, timestamp) {
+        trials = buildTrials();
+        results = [];
+        currentIndex = 0;
+        sessionLabel = sessionInput.value.trim();
+        hasDownloaded = false;
+        sessionInput.disabled = true;
+        sessionField.classList.add('is-locked');
+        userGuide.classList.add('is-hidden');
+        shell.classList.remove('is-alarming');
+        state = 'running';
+        prepareTarget(origin);
+        trialStartedAt = timestamp;
+      }
+
+      function completeTrial(hitPoint, timestamp) {
+        const trial = trials[currentIndex];
+        const movementTime = Math.round((timestamp - trialStartedAt) * 10) / 10;
+        results.push({
+          trial: currentIndex + 1,
+          A: trial.A,
+          W: trial.W,
+          MT: movementTime,
+          misses: currentMisses,
+          session: sessionLabel
+        });
+
+        currentIndex += 1;
+        if (currentIndex >= trials.length) {
+          state = 'completed';
+          currentTarget = null;
+          updateAccessibleStatus();
+          return;
+        }
+
+        prepareTarget(hitPoint);
+        trialStartedAt = timestamp;
+      }
+
+      function csvCell(value) {
+        const text = String(value ?? '');
+        return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+      }
+
+      function safeFilenameLabel(value) {
+        return value
+          .normalize('NFKC')
+          .replace(/[^\p{L}\p{N}_-]+/gu, '_')
+          .replace(/^_+|_+$/g, '')
+          .slice(0, 32);
+      }
+
+      function buildCsv() {
+        const header = ['trial', 'A', 'W', 'MT', 'misses', 'session'];
+        const rows = results.map((row) => header.map((key) => csvCell(row[key])).join(','));
+        return [header.join(','), ...rows].join('\r\n');
+      }
+
+      function downloadCsv() {
+        if (results.length !== TOTAL_TRIALS) return;
+        const safeLabel = safeFilenameLabel(sessionLabel);
+        const filename = safeLabel
+          ? `fitts_alarm_results_${safeLabel}.csv`
+          : 'fitts_alarm_results.csv';
+        const blob = new Blob(['\ufeff', buildCsv()], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = filename;
+        anchor.hidden = true;
+        document.body.appendChild(anchor);
+        anchor.click();
+        hasDownloaded = true;
+        anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function restartExperiment() {
+        if (!hasDownloaded && results.length === TOTAL_TRIALS) {
+          const confirmed = window.confirm('這一輪的資料尚未下載，重新測驗會清除目前結果。確定要繼續嗎？');
+          if (!confirmed) return;
+        }
+        state = 'idle';
+        trials = [];
+        results = [];
+        currentIndex = 0;
+        currentTarget = null;
+        currentMisses = 0;
+        trialStartedAt = 0;
+        sessionLabel = '';
+        hasDownloaded = false;
+        missFlashUntil = 0;
+        sessionInput.disabled = false;
+        sessionField.classList.remove('is-locked');
+        userGuide.classList.remove('is-hidden');
+        userGuide.open = true;
+        shell.classList.add('is-alarming');
+        updateAccessibleStatus();
+      }
+
+      function updateAccessibleStatus() {
+        if (state === 'idle') {
+          liveStatus.textContent = '鬧鐘正在響，等待開始。';
+          canvas.setAttribute('aria-label', '防賴床鬧鐘待機中。點擊畫面中央按鈕開始解除鬧鐘。');
+          return;
+        }
+        if (state === 'running') {
+          const message = `目標 ${currentIndex + 1}，共 ${TOTAL_TRIALS} 個。`;
+          liveStatus.textContent = message;
+          canvas.setAttribute('aria-label', `${message} 請點擊畫面中的圓形目標。`);
+          return;
+        }
+        const average = results.reduce((sum, row) => sum + row.MT, 0) / results.length;
+        const message = `鬧鐘已解除。完成 ${results.length} 個目標，平均移動時間 ${average.toFixed(1)} 毫秒。`;
+        liveStatus.textContent = message;
+        canvas.setAttribute('aria-label', `${message} 可下載 CSV 實驗資料或再測一次。`);
+      }
+
+      function handlePointerDown(event) {
+        const timestamp = performance.now();
+        const point = canvasPoint(event);
+
+        if (state === 'idle' && isInsideRect(point, startButton)) {
+          event.preventDefault();
+          beginExperiment(point, timestamp);
+          return;
+        }
+
+        if (state === 'running') {
+          event.preventDefault();
+          if (isInsideTarget(point, currentTarget)) {
+            completeTrial(point, timestamp);
+          } else {
+            currentMisses += 1;
+            missFlashUntil = timestamp + 180;
+            liveStatus.textContent = `未命中。目標 ${currentIndex + 1}，已失誤 ${currentMisses} 次。`;
+          }
+          return;
+        }
+
+        if (state === 'completed' && isInsideRect(point, downloadButton)) {
+          event.preventDefault();
+          downloadCsv();
+          return;
+        }
+
+        if (state === 'completed' && isInsideRect(point, restartButton)) {
+          event.preventDefault();
+          restartExperiment();
+        }
+      }
+
+      function updateCursor(event) {
+        cursorPoint = canvasPoint(event);
+        const clickable = (state === 'idle' && isInsideRect(cursorPoint, startButton)) ||
+          (state === 'running' && currentTarget && isInsideTarget(cursorPoint, currentTarget)) ||
+          (state === 'completed' && (
+            isInsideRect(cursorPoint, downloadButton) || isInsideRect(cursorPoint, restartButton)
+          ));
+        canvas.style.cursor = clickable ? 'pointer' : 'default';
+      }
+
+      canvas.addEventListener('pointerdown', handlePointerDown);
+      canvas.addEventListener('pointermove', updateCursor);
+      canvas.addEventListener('pointerleave', () => {
+        cursorPoint = { x: -1, y: -1 };
+        canvas.style.cursor = 'default';
+      });
+
+      window.addEventListener('resize', () => {
+        configureCanvas();
+      });
+
+      configureCanvas();
+      updateAccessibleStatus();
+      cancelAnimationFrame(animationFrame);
+      render();
+
+      // Small read-only surface for automated verification without changing experiment behavior.
+      window.__FITTS_ALARM_TEST__ = Object.freeze({
+        snapshot: () => ({
+          state,
+          trialCount: trials.length,
+          resultCount: results.length,
+          currentIndex,
+          currentTarget: currentTarget ? { ...currentTarget } : null,
+          conditions: trials.map(({ A, W }) => ({ A, W })),
+          results: results.map((row) => ({ ...row }))
+        }),
+        buildCsv: () => buildCsv()
+      });
+    })();
+  </script>
+</body>
+</html>
