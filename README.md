@@ -1,5 +1,9 @@
 # Fitts Alarm: An Anti-Snooze Clicking Experiment
 
+- 🌐 **[Try the Live Experiment](https://thisisroni.github.io/Fitts_Alarm/)**
+- 🎥 **[Watch the Experiment Video](https://youtu.be/GWm5lXoYIuI)**
+- 📄 **[Read the Experiment Report](report.md)**
+
 Fitts Alarm is an interactive web experiment that combines an anti-snooze alarm scenario with data collection based on Fitts' Law. Instead of dismissing the alarm with a single click in a fixed location, participants must click 36 circular targets that vary randomly in position and size. This interaction is designed to disrupt muscle memory while recording movement time (MT).
 
 The entire project consists of a single `index.html` file. No framework, dependencies, or build steps are required, so it can be opened directly in a browser or deployed to GitHub Pages.

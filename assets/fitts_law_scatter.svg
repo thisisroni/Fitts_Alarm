@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc">
+<title id="title">Movement Time vs. Index of Difficulty</title>
+<desc id="desc">Scatter plot of 36 Fitts Alarm trials with a linear regression line.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172033}.grid{stroke:#d8dee9;stroke-width:1}.axis{stroke:#172033;stroke-width:2}.tick{font-size:14px}.label{font-size:18px;font-weight:600}.title{font-size:25px;font-weight:700}.subtitle{font-size:14px;fill:#536174}.point{fill:#2563eb;fill-opacity:.68;stroke:#174ea6;stroke-width:1}.fit{stroke:#dc2626;stroke-width:3}.legend{font-size:14px}</style>
+<text class="title" x="500" y="37" text-anchor="middle">Movement Time vs. Index of Difficulty</text>
+<text class="subtitle" x="500" y="61" text-anchor="middle">Fitts Alarm experiment · n = 36 trials</text>
+<line class="grid" x1="95" y1="525.94" x2="955" y2="525.94"/>
+<text class="tick" x="81" y="530.94" text-anchor="end">500</text>
+<line class="grid" x1="95" y1="467.81" x2="955" y2="467.81"/>
+<text class="tick" x="81" y="472.81" text-anchor="end">600</text>
+<line class="grid" x1="95" y1="409.69" x2="955" y2="409.69"/>
+<text class="tick" x="81" y="414.69" text-anchor="end">700</text>
+<line class="grid" x1="95" y1="351.56" x2="955" y2="351.56"/>
+<text class="tick" x="81" y="356.56" text-anchor="end">800</text>
+<line class="grid" x1="95" y1="293.44" x2="955" y2="293.44"/>
+<text class="tick" x="81" y="298.44" text-anchor="end">900</text>
+<line class="grid" x1="95" y1="235.31" x2="955" y2="235.31"/>
+<text class="tick" x="81" y="240.31" text-anchor="end">1000</text>
+<line class="grid" x1="95" y1="177.19" x2="955" y2="177.19"/>
+<text class="tick" x="81" y="182.19" text-anchor="end">1100</text>
+<line class="grid" x1="95" y1="119.06" x2="955" y2="119.06"/>
+<text class="tick" x="81" y="124.06" text-anchor="end">1200</text>
+<line class="grid" x1="95.00" y1="90" x2="95.00" y2="555"/>
+<text class="tick" x="95.00" y="582" text-anchor="middle">1.0</text>
+<line class="grid" x1="238.33" y1="90" x2="238.33" y2="555"/>
+<text class="tick" x="238.33" y="582" text-anchor="middle">1.5</text>
+<line class="grid" x1="381.67" y1="90" x2="381.67" y2="555"/>
+<text class="tick" x="381.67" y="582" text-anchor="middle">2.0</text>
+<line class="grid" x1="525.00" y1="90" x2="525.00" y2="555"/>
+<text class="tick" x="525.00" y="582" text-anchor="middle">2.5</text>
+<line class="grid" x1="668.33" y1="90" x2="668.33" y2="555"/>
+<text class="tick" x="668.33" y="582" text-anchor="middle">3.0</text>
+<line class="grid" x1="811.67" y1="90" x2="811.67" y2="555"/>
+<text class="tick" x="811.67" y="582" text-anchor="middle">3.5</text>
+<line class="grid" x1="955.00" y1="90" x2="955.00" y2="555"/>
+<text class="tick" x="955.00" y="582" text-anchor="middle">4.0</text>
+<line class="axis" x1="95" y1="555" x2="955" y2="555"/>
+<line class="axis" x1="95" y1="90" x2="95" y2="555"/>
+<text class="label" x="525.0" y="618" text-anchor="middle">Index of Difficulty, ID (bits)</text>
+<text class="label" x="27" y="322.5" text-anchor="middle" transform="rotate(-90 27 322.5)">Movement Time, MT (ms)</text>
+<line class="fit" x1="187.29" y1="372.31" x2="844.55" y2="325.11"/>
+<circle class="point" cx="187.29" cy="264.32" r="6"><title>Trial 1: A=150px, W=100px, ID=1.322 bits, MT=950.1ms</title></circle>
+<circle class="point" cx="187.29" cy="467.99" r="6"><title>Trial 2: A=150px, W=100px, ID=1.322 bits, MT=599.7ms</title></circle>
+<circle class="point" cx="693.41" cy="332.21" r="6"><title>Trial 3: A=300px, W=40px, ID=3.087 bits, MT=833.3ms</title></circle>
+<circle class="point" cx="637.68" cy="400.04" r="6"><title>Trial 4: A=450px, W=70px, ID=2.893 bits, MT=716.6ms</title></circle>
+<circle class="point" cx="381.67" cy="487.11" r="6"><title>Trial 5: A=300px, W=100px, ID=2.000 bits, MT=566.8ms</title></circle>
+<circle class="point" cx="452.74" cy="418.87" r="6"><title>Trial 6: A=150px, W=40px, ID=2.248 bits, MT=684.2ms</title></circle>
+<circle class="point" cx="496.93" cy="322.96" r="6"><title>Trial 7: A=300px, W=70px, ID=2.402 bits, MT=849.2ms</title></circle>
+<circle class="point" cx="281.93" cy="438.17" r="6"><title>Trial 8: A=150px, W=70px, ID=1.652 bits, MT=651.0ms</title></circle>
+<circle class="point" cx="513.37" cy="439.39" r="6"><title>Trial 9: A=450px, W=100px, ID=2.459 bits, MT=648.9ms</title></circle>
+<circle class="point" cx="693.41" cy="351.56" r="6"><title>Trial 10: A=300px, W=40px, ID=3.087 bits, MT=800.0ms</title></circle>
+<circle class="point" cx="693.41" cy="311.46" r="6"><title>Trial 11: A=300px, W=40px, ID=3.087 bits, MT=869.0ms</title></circle>
+<circle class="point" cx="693.41" cy="246.12" r="6"><title>Trial 12: A=300px, W=40px, ID=3.087 bits, MT=981.4ms</title></circle>
+<circle class="point" cx="187.29" cy="148.53" r="6"><title>Trial 13: A=150px, W=100px, ID=1.322 bits, MT=1149.3ms</title></circle>
+<circle class="point" cx="844.55" cy="264.14" r="6"><title>Trial 14: A=450px, W=40px, ID=3.615 bits, MT=950.4ms</title></circle>
+<circle class="point" cx="637.68" cy="341.97" r="6"><title>Trial 15: A=450px, W=70px, ID=2.893 bits, MT=816.5ms</title></circle>
+<circle class="point" cx="452.74" cy="408.99" r="6"><title>Trial 16: A=150px, W=40px, ID=2.248 bits, MT=701.2ms</title></circle>
+<circle class="point" cx="496.93" cy="439.51" r="6"><title>Trial 17: A=300px, W=70px, ID=2.402 bits, MT=648.7ms</title></circle>
+<circle class="point" cx="281.93" cy="186.78" r="6"><title>Trial 18: A=150px, W=70px, ID=1.652 bits, MT=1083.5ms</title></circle>
+<circle class="point" cx="637.68" cy="389.98" r="6"><title>Trial 19: A=450px, W=70px, ID=2.893 bits, MT=733.9ms</title></circle>
+<circle class="point" cx="496.93" cy="322.67" r="6"><title>Trial 20: A=300px, W=70px, ID=2.402 bits, MT=849.7ms</title></circle>
+<circle class="point" cx="637.68" cy="371.21" r="6"><title>Trial 21: A=450px, W=70px, ID=2.893 bits, MT=766.2ms</title></circle>
+<circle class="point" cx="496.93" cy="177.13" r="6"><title>Trial 22: A=300px, W=70px, ID=2.402 bits, MT=1100.1ms</title></circle>
+<circle class="point" cx="381.67" cy="437.65" r="6"><title>Trial 23: A=300px, W=100px, ID=2.000 bits, MT=651.9ms</title></circle>
+<circle class="point" cx="513.37" cy="410.79" r="6"><title>Trial 24: A=450px, W=100px, ID=2.459 bits, MT=698.1ms</title></circle>
+<circle class="point" cx="452.74" cy="292.74" r="6"><title>Trial 25: A=150px, W=40px, ID=2.248 bits, MT=901.2ms</title></circle>
+<circle class="point" cx="513.37" cy="351.56" r="6"><title>Trial 26: A=450px, W=100px, ID=2.459 bits, MT=800.0ms</title></circle>
+<circle class="point" cx="281.93" cy="439.10" r="6"><title>Trial 27: A=150px, W=70px, ID=1.652 bits, MT=649.4ms</title></circle>
+<circle class="point" cx="844.55" cy="312.27" r="6"><title>Trial 28: A=450px, W=40px, ID=3.615 bits, MT=867.6ms</title></circle>
+<circle class="point" cx="513.37" cy="390.62" r="6"><title>Trial 29: A=450px, W=100px, ID=2.459 bits, MT=732.8ms</title></circle>
+<circle class="point" cx="281.93" cy="371.32" r="6"><title>Trial 30: A=150px, W=70px, ID=1.652 bits, MT=766.0ms</title></circle>
+<circle class="point" cx="381.67" cy="138.59" r="6"><title>Trial 31: A=300px, W=100px, ID=2.000 bits, MT=1166.4ms</title></circle>
+<circle class="point" cx="381.67" cy="418.58" r="6"><title>Trial 32: A=300px, W=100px, ID=2.000 bits, MT=684.7ms</title></circle>
+<circle class="point" cx="844.55" cy="351.91" r="6"><title>Trial 33: A=450px, W=40px, ID=3.615 bits, MT=799.4ms</title></circle>
+<circle class="point" cx="187.29" cy="468.28" r="6"><title>Trial 34: A=150px, W=100px, ID=1.322 bits, MT=599.2ms</title></circle>
+<circle class="point" cx="452.74" cy="428.46" r="6"><title>Trial 35: A=150px, W=40px, ID=2.248 bits, MT=667.7ms</title></circle>
+<circle class="point" cx="844.55" cy="254.73" r="6"><title>Trial 36: A=450px, W=40px, ID=3.615 bits, MT=966.6ms</title></circle>
+<rect x="112" y="105" width="310" height="90" rx="8" fill="#ffffff" stroke="#b8c2d1"/>
+<text class="legend" x="130" y="134">Linear model: MT = 717.47 + 35.42 × ID</text>
+<text class="legend" x="130" y="159">R² = 0.023</text>
+<circle class="point" cx="137" cy="180" r="5"/><text class="legend" x="151" y="185">Individual trial</text>
+<line class="fit" x1="274" y1="180" x2="308" y2="180"/><text class="legend" x="318" y="185">Linear fit</text>
+</svg>
