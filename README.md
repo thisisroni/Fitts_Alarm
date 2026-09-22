@@ -1,58 +1,58 @@
-# Fitts Alarm：防賴床鬧鐘點擊實驗
+# Fitts Alarm: An Anti-Snooze Clicking Experiment
 
-Fitts Alarm 是一個結合「防賴床鬧鐘」情境與 Fitts’ Law 資料收集的互動式網頁實驗。使用者不能在固定位置一鍵關閉鬧鐘，而必須依序點擊 36 個位置與尺寸隨機變化的圓形目標，藉此打破肌肉記憶並記錄移動時間（Movement Time, MT）。
+Fitts Alarm is an interactive web experiment that combines an anti-snooze alarm scenario with data collection based on Fitts' Law. Instead of dismissing the alarm with a single click in a fixed location, participants must click 36 circular targets that vary randomly in position and size. This interaction is designed to disrupt muscle memory while recording movement time (MT).
 
-整個專案只有一個 `index.html`，不需要框架、套件或 build step，可直接在瀏覽器執行或部署至 GitHub Pages。
+The entire project consists of a single `index.html` file. No framework, dependencies, or build steps are required, so it can be opened directly in a browser or deployed to GitHub Pages.
 
-## 快速開始
+## Quick Start
 
-1. 直接用桌機瀏覽器開啟 `index.html`。
-2. 視需要填寫 Session 標籤，例如 `sleepy_01` 或 `awake_01`。
-3. 閱讀頁面上方的操作說明，點擊「起床／開始解除鬧鐘」。
-4. 依序點擊畫面中的 36 個圓形目標。
-5. 完成後點擊「下載 CSV 實驗資料」。
-6. 如需進行下一輪，點擊「再測一次」、調整標籤後重新開始。
+1. Open `index.html` in a desktop browser.
+2. Optionally enter a session label, such as `sleepy_01` or `awake_01`.
+3. Read the instructions at the top of the page and click **「起床／開始解除鬧鐘」 (Wake Up / Start Dismissing Alarm)**.
+4. Click each of the 36 circular targets in sequence.
+5. When the experiment is complete, click **「下載 CSV 實驗資料」 (Download CSV Experiment Data)**.
+6. To run another session, click **「再測一次」 (Run Again)**, update the label if needed, and restart the experiment.
 
-建議使用桌機與滑鼠，並在不同實驗條件間保持相同的瀏覽器縮放比例、視窗大小、輸入裝置與坐姿。
+For best results, use a desktop computer and mouse. Keep the browser zoom level, window size, input device, and sitting posture consistent across experimental conditions.
 
-## Session 標籤怎麼用？
+## How to Use Session Labels
 
-Session 標籤是選填的實驗條件識別文字，不會影響 trial 內容或計時。建議使用一致的命名規則：
+The session label is an optional identifier for the experimental condition. It does not affect trial generation or timing. Use a consistent naming convention, such as:
 
-| 標籤範例 | 意義 |
+| Example label | Meaning |
 |---|---|
-| `sleepy_01` | 剛睡醒狀態，第 1 次測量 |
-| `awake_01` | 清醒狀態，第 1 次測量 |
-| `p03_sleepy` | 受試者 3，剛睡醒狀態 |
+| `sleepy_01` | First measurement immediately after waking up |
+| `awake_01` | First measurement while fully awake |
+| `p03_sleepy` | Participant 3, immediately after waking up |
 
-標籤會寫入 CSV 的 `session` 欄位，也會加入下載檔名，例如 `fitts_alarm_results_sleepy_01.csv`。開始實驗後標籤會暫時鎖定；選擇「再測一次」後會重新開放編輯並保留原文字。
+The label is stored in the CSV `session` column and included in the downloaded filename, for example, `fitts_alarm_results_sleepy_01.csv`. The label field is temporarily locked after the experiment begins. Selecting **「再測一次」 (Run Again)** unlocks the field while preserving its current value.
 
-## 實驗設計
+## Experiment Design
 
-| 因子 | 水準 |
+| Factor | Levels |
 |---|---|
-| Target Distance A | 150、300、450 px |
-| Target Width W（圓形直徑） | 40、70、100 px |
-| 每組重複次數 | 4 |
-| Trial 總數 | 3 × 3 × 4 = 36 |
+| Target Distance A | 150, 300, and 450 px |
+| Target Width W (circle diameter) | 40, 70, and 100 px |
+| Repetitions per combination | 4 |
+| Total trials | 3 × 3 × 4 = 36 |
 
-- 九種 `(A, W)` 組合各出現四次，開始時使用 Fisher–Yates shuffle 隨機排列。
-- 第一個目標從開始按鈕的實際點擊位置計算；之後從上一個成功命中的實際位置計算。
-- 目標中心與起點的距離會精確等於該 trial 的 A，且整個圓都會保留在 900×700 canvas 內。
-- 點擊圓外會增加該 trial 的 `misses`，不會前進到下一個目標，也不會重設計時。
+- Each of the nine `(A, W)` combinations appears four times. Trials are randomized at the start using a Fisher-Yates shuffle.
+- For the first target, distance is measured from the actual position where the start button was clicked. For every subsequent target, it is measured from the actual position of the previous successful click.
+- The distance between the starting point and the target center is exactly equal to the trial's A value, and the entire circle remains within the 900 × 700 canvas.
+- Clicking outside the target increments that trial's `misses` count. It does not advance to the next target or reset the timer.
 
-## 計時方式
+## Timing
 
-App 使用 `performance.now()` 計時：
+The app uses `performance.now()` for timing:
 
-- 第一筆 MT：從點擊開始按鈕到成功命中第一個目標。
-- 後續 MT：從成功命中上一個目標到成功命中目前目標。
-- 若發生 miss，MT 會包含重新嘗試所花費的時間。
-- MT 單位為毫秒，記錄至小數點後一位。
+- First MT: measured from clicking the start button to successfully hitting the first target.
+- Subsequent MTs: measured from successfully hitting the previous target to successfully hitting the current target.
+- If a miss occurs, the MT includes the time spent retrying.
+- MT is measured in milliseconds and recorded to one decimal place.
 
-## CSV 資料
+## CSV Data
 
-CSV 每一列代表一個 trial：
+Each row in the CSV represents one trial:
 
 ```csv
 trial,A,W,MT,misses,session
@@ -60,30 +60,30 @@ trial,A,W,MT,misses,session
 2,150,40,845.1,1,sleepy_01
 ```
 
-| 欄位 | 說明 |
+| Column | Description |
 |---|---|
-| `trial` | Trial 編號，從 1 開始 |
-| `A` | 目標距離（px） |
-| `W` | 目標直徑（px） |
-| `MT` | Movement Time（ms） |
-| `misses` | 成功命中前的錯誤點擊次數 |
-| `session` | 使用者輸入的 Session 標籤 |
+| `trial` | Trial number, starting from 1 |
+| `A` | Target distance (px) |
+| `W` | Target diameter (px) |
+| `MT` | Movement time (ms) |
+| `misses` | Number of missed clicks before the successful hit |
+| `session` | Session label entered by the user |
 
-資料在實驗期間只保存在目前分頁的記憶體中。完成後請先下載 CSV；若尚未下載就選擇重測，App 會顯示警告。重新整理或關閉分頁也會清除尚未下載的結果。
+During the experiment, data is stored only in the current browser tab's memory. Download the CSV after completing a session. If you try to start another session before downloading the results, the app will display a warning. Refreshing or closing the tab also clears any results that have not been downloaded.
 
-## GitHub Pages 部署
+## Deploying to GitHub Pages
 
-1. 將 `index.html` 與本 README 放在 GitHub repository 根目錄。
-2. 在 repository 開啟 **Settings → Pages**。
-3. 將 Source 設為 **Deploy from a branch**。
-4. 選擇要部署的 branch（通常是 `main`）及 `/ (root)`。
-5. 儲存後等待 GitHub 提供網站網址。
+1. Place `index.html` and this README in the root directory of the GitHub repository.
+2. Open **Settings → Pages** in the repository.
+3. Set **Source** to **Deploy from a branch**.
+4. Select the branch to deploy—usually `main`—and choose `/ (root)`.
+5. Save the settings and wait for GitHub to provide the website URL.
 
-本專案不需要後端；CSV 由瀏覽器使用 `Blob` 與暫時下載連結在本機產生。
+This project does not require a backend. The browser generates the CSV locally using a `Blob` and a temporary download link.
 
-## 調整實驗參數
+## Adjusting Experiment Parameters
 
-可在 `index.html` 的 JavaScript 區段修改以下常數：
+The following constants can be modified in the JavaScript section of `index.html`:
 
 ```js
 const DISTANCES = [150, 300, 450];
@@ -91,12 +91,12 @@ const WIDTHS = [40, 70, 100];
 const REPETITIONS = 4;
 ```
 
-若增加最大距離或目標尺寸，必須同步確認 900×700 canvas 是否仍能在所有起點放置完整目標，否則會影響指定 A 的正確性。
+If you increase the maximum distance or target size, verify that the full target can still be placed within the 900 × 700 canvas from every possible starting point. Otherwise, the specified A value may no longer be accurate.
 
-## 專案結構
+## Project Structure
 
 ```text
 Fitts_Alarm/
-├── index.html   # 完整 App：版面、canvas、實驗邏輯與 CSV 匯出
-└── README.md    # 使用、資料與部署說明
+├── index.html   # Complete app: layout, canvas, experiment logic, and CSV export
+└── README.md    # Usage, data, and deployment documentation
 ```
